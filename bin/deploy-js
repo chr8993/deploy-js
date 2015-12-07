@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+var program           = require('commander');
+var inquire           = require('inquirer');
+var path              = require('path');
+var dir               = path.resolve(__dirname, '../lib/questions.js');
+var pushDir           = path.resolve(__dirname, '../lib/push.js');
+var push              = require(pushDir);
+var questions         = require(dir);
+var fs                = require('fs');
+
+program
+  .version('0.0.1')
+  .usage('[command] <options>');
+
+program
+  .command('init [options]')
+  .description('Initializes a new environment to deploy')
+  .option('-h, --host [host]', 'Destination to push to')
+  .action(function(env, opts) {
+      var q = questions.questions;
+      inquire.prompt(q, function(ans) {
+        var answers = JSON.stringify(ans, null, 4);
+        var fname = 'deploy.conf';
+        var directories = ans.directories;
+        fs.writeFile(fname, answers, function(err) {
+          if(!err) {
+            var m = "Successfully created config file!";
+            console.log(m);
+          }
+        });
+      });
+  });
+
+program
+  .command('deploy [options]')
+  .description('Deploys to an environment')
+  .option('-e, --excecute', "Execute build scripts")
+  .action(function(env, opts) {
+      fs.readFile('deploy.conf', function(err, data) {
+        if(err) {
+          console.log('Error: No deploy.conf file.');
+          return;
+        }
+        var config = JSON.parse(data);
+        var folders = config.directories;
+        var files = config.files;
+        push.setConfig(config);
+        push.uploadFolders(folders);
+        push.uploadFiles(files);
+      });
+  });
+
+program.parse(process.argv);
+
+if (!process.argv.slice(2).length) {
+  program.outputHelp();
+}

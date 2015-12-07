@@ -1,0 +1,20 @@
+{
+  "name": "deploy-js",
+  "version": "0.0.1",
+  "description": "Deploy files over ssh",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Christian Gomez <chr8993@gmail.com> (http://christiangomez.me)",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^2.9.0",
+    "inquirer": "^0.11.0",
+    "q": "^1.4.1",
+    "shelljs": "^0.5.3"
+  },
+  "bin": {
+    "deploy-js": "./bin/deploy-js"
+  }
+}
